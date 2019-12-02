@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     StickyRecyclerHeadersTouchListener touchListener =
         new StickyRecyclerHeadersTouchListener(recyclerView, headersDecor);
     touchListener.setOnHeaderClickListener(
-            (header, position, headerId) -> Toast.makeText(MainActivity.this, "Header position: " + position + ", id: " + headerId,
+            (header, position, headerId, e) -> Toast.makeText(MainActivity.this, "Header position: " + position + ", id: " + headerId + ", e: " + e.getRawX() +"  " + e.getRawY(),
                 Toast.LENGTH_SHORT).show());
     recyclerView.addOnItemTouchListener(touchListener);
     recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, (view, position) -> adapter.remove(adapter.getItem(position))));
