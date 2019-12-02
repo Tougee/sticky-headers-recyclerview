@@ -5,9 +5,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +29,9 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-    Button button = (Button) findViewById(R.id.button_update);
-    final ToggleButton isReverseButton = (ToggleButton) findViewById(R.id.button_is_reverse);
+    final RecyclerView recyclerView = findViewById(R.id.recyclerview);
+    Button button = findViewById(R.id.button_update);
+    final ToggleButton isReverseButton = findViewById(R.id.button_is_reverse);
 
     // Set adapter populated with example dummy data
     final AnimalsHeadersAdapter adapter = new AnimalsHeadersAdapter();
@@ -40,19 +40,11 @@ public class MainActivity extends AppCompatActivity {
     recyclerView.setAdapter(adapter);
 
     // Set button to update all views one after another (Test for the "Dance")
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        for (int i = 0; i < adapter.getItemCount(); i++) {
-          final int index = i;
-          handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-              adapter.notifyItemChanged(index);
-            }
-          }, 50);
-        }
+    button.setOnClickListener(v -> {
+      Handler handler = new Handler(Looper.getMainLooper());
+      for (int i = 0; i < adapter.getItemCount(); i++) {
+        final int index = i;
+        handler.postDelayed(() -> adapter.notifyItemChanged(index), 50);
       }
     });
 
@@ -72,20 +64,10 @@ public class MainActivity extends AppCompatActivity {
     StickyRecyclerHeadersTouchListener touchListener =
         new StickyRecyclerHeadersTouchListener(recyclerView, headersDecor);
     touchListener.setOnHeaderClickListener(
-        new StickyRecyclerHeadersTouchListener.OnHeaderClickListener() {
-          @Override
-          public void onHeaderClick(View header, int position, long headerId) {
-            Toast.makeText(MainActivity.this, "Header position: " + position + ", id: " + headerId,
-                Toast.LENGTH_SHORT).show();
-          }
-        });
+            (header, position, headerId) -> Toast.makeText(MainActivity.this, "Header position: " + position + ", id: " + headerId,
+                Toast.LENGTH_SHORT).show());
     recyclerView.addOnItemTouchListener(touchListener);
-    recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
-      @Override
-      public void onItemClick(View view, int position) {
-        adapter.remove(adapter.getItem(position));
-      }
-    }));
+    recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, (view, position) -> adapter.remove(adapter.getItem(position))));
     adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
       @Override
       public void onChanged() {
@@ -93,14 +75,11 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    isReverseButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        boolean isChecked = isReverseButton.isChecked();
-        isReverseButton.setChecked(isChecked);
-        layoutManager.setReverseLayout(isChecked);
-        adapter.notifyDataSetChanged();
-      }
+    isReverseButton.setOnClickListener(v -> {
+      boolean isChecked = isReverseButton.isChecked();
+      isReverseButton.setChecked(isChecked);
+      layoutManager.setReverseLayout(isChecked);
+      adapter.notifyDataSetChanged();
     });
   }
 
